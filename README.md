@@ -28,7 +28,13 @@ Meteread is a command-line application that provides meter readings from differe
     cd meteread
     ```
 
-2. Install dependencies:
+2. Create and activate a virtual environment:
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+    ```
+
+3. Install dependencies:
     ```bash
     pip install -r requirements.txt
     ```
