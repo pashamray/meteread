@@ -24,7 +24,7 @@ Meteread is a command-line application that provides meter readings from differe
 
 1. Clone the repository:
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/pashamray/meteread.git
     cd meteread
     ```
 
