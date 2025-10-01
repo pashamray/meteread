@@ -5,7 +5,7 @@ from meter.abstractmeter import AbstractMeter
 
 class ElectricityMeter(AbstractMeter):
     def __init__(self, name: str, sn: str | None = None):
-        super().__init__(name, 'kW', sn)
+        super().__init__(name, 'kW/h', sn)
 
     def __next__(self) -> float:
         sleep(1)
