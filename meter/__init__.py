@@ -1,3 +1,3 @@
-from meter.watermeter import WaterMeter
-from meter.electricitymeter import ElectricityMeter
-from meter.gasmeter import GasMeter
+from meter.WaterMeter import WaterMeter
+from meter.ElectricityMeter import ElectricityMeter
+from meter.GasMeter import GasMeter

@@ -1,6 +1,6 @@
 import random
 from time import sleep
-from meter.abstractmeter import AbstractMeter
+from meter.AbstractMeter import AbstractMeter
 
 
 class ElectricityMeter(AbstractMeter):

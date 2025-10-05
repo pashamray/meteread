@@ -107,13 +107,15 @@ To add a new meter type:
 3. Add the meter to the meters dictionary in `main.py`
 
 Example:
+
 ```python
-from meter.abstractmeter import AbstractMeter
+from meter.AbstractMeter import AbstractMeter
+
 
 class SolarMeter(AbstractMeter):
     def __init__(self, name: str, sn: str | None = None):
         super().__init__(name, 'kWh', sn)
-    
+
     def __next__(self) -> float:
         # Implementation here
         raise StopIteration
