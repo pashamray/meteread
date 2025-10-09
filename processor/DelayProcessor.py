@@ -5,7 +5,6 @@ from processor.AbstractProcessor import AbstractProcessor
 
 class DelayProcessor(AbstractProcessor):
     def __init__(self, processor: Iterator, delay: float = 1.0):
-        super().__init__()
         self.processor = processor
         self.delay = delay
 
