@@ -1,14 +1,33 @@
 import typer
 from meter import WaterMeter, ElectricityMeter, GasMeter
+from processor import DelayProcessor, ZeroProcessor, RandomProcessor
 
 app = typer.Typer()
 
 @app.command()
 def read(name: str):
     meters = {
-        'water': WaterMeter('water meter 1'),
-        'electricity': ElectricityMeter('electricity meter 1'),
-        'gas': GasMeter('gas meter 1'),
+        'water': WaterMeter(
+            name='water meter 1',
+            processor=DelayProcessor(
+                processor=RandomProcessor(),
+                delay=5.0
+            )
+        ),
+        'electricity': ElectricityMeter(
+            name='electricity meter 1',
+            processor=DelayProcessor(
+                processor=RandomProcessor(),
+                delay=5.0
+            )
+        ),
+        'gas': GasMeter(
+            name='gas meter 1',
+            processor=DelayProcessor(
+                processor=ZeroProcessor(),
+                delay=5.0
+            )
+        ),
     }
     meter = meters.get(name)
 

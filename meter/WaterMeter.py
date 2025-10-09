@@ -1,12 +1,11 @@
-import random
-from time import sleep
+from collections.abc import Iterator
 from meter.AbstractMeter import AbstractMeter
 
-
 class WaterMeter(AbstractMeter):
-    def __init__(self, name: str, sn: str | None = None):
-        super().__init__(name, 'm3', sn)
-
-    def __next__(self) -> float:
-        sleep(1)
-        return round(random.random() * 5, 2)
+    def __init__(self, name: str, processor: Iterator, sn: str | None = None):
+        super().__init__(
+            name=name,
+            unit='m3',
+            processor=processor,
+            sn=sn
+        )
