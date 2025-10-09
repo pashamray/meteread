@@ -6,6 +6,9 @@ A Python utility for reading meter values from various types of utility meters i
 
 Meteread is a command-line application that provides meter readings from different utility meters. It features a modular architecture with separate meter types and data processors, allowing for flexible configuration of how meter data is read and processed. The project uses an object-oriented design with abstract base classes for both meters and processors.
 
+### Screenshot
+![screenshot](doc/screenshot.png)
+
 ## Features
 
 - **Multiple Meter Types**: Support for water, electricity, and gas meters
