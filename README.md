@@ -1,24 +1,33 @@
 # Meteread
 
-A Python utility for reading meter values from various types of utility meters including water, electricity, and gas meters.
+A Python utility for reading meter values from various types of utility meters including water, electricity, and gas meters with configurable data processors.
 
 ## Overview
 
-Meteread is a command-line application that provides meter readings from different utility meters. It provides a simple interface to read meter values and displays them with appropriate units. The project uses an object-oriented design with an abstract base class and specific implementations for each meter type.
+Meteread is a command-line application that provides meter readings from different utility meters. It features a modular architecture with separate meter types and data processors, allowing for flexible configuration of how meter data is read and processed. The project uses an object-oriented design with abstract base classes for both meters and processors.
 
 ## Features
 
 - **Multiple Meter Types**: Support for water, electricity, and gas meters
-- **Real-time Reading**: Reads meter values with realistic intervals
+- **Modular Processor Architecture**: Configurable data processors for different reading behaviors
+- **DSMR Support**: Real electricity meter reading via DSMR protocol
+- **Delay and Random Processing**: Simulated readings with configurable delays
 - **Iterator Pattern**: Each meter implements Python's iterator protocol for continuous reading
 - **Command Line Interface**: Easy-to-use CLI built with Typer
-- **Extensible Design**: Abstract base class allows for easy addition of new meter types
+- **Extensible Design**: Abstract base classes allow for easy addition of new meter types and processors
 
 ## Meter Types
 
 - **Water Meter**: Measures water consumption in cubic meters (m³)
-- **Electricity Meter**: Measures electrical consumption in kilowatts (kW)
+- **Electricity Meter**: Measures electrical consumption in kilowatts (kW) 
 - **Gas Meter**: Measures gas consumption in cubic meters (m³)
+
+## Processor Types
+
+- **RandomProcessor**: Generates random values for testing and simulation
+- **ZeroProcessor**: Returns zero values (useful for testing)
+- **DelayProcessor**: Wraps another processor and adds configurable delays
+- **DsmrProcessor**: Reads real electricity data from DSMR-compatible smart meters
 
 ## Installation
 
@@ -28,15 +37,14 @@ Meteread is a command-line application that provides meter readings from differe
     cd meteread
     ```
 
-2. Create and activate a virtual environment:
+2. Install using uv (recommended):
     ```bash
-    python -m venv .venv
-    source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+    uv install
     ```
 
-3. Install dependencies:
+   Or using pip:
     ```bash
-    pip install -r requirements.txt
+    pip install -e .
     ```
 
 ## Usage
@@ -51,17 +59,16 @@ python main.py read <meter_type>
 
 #### Read Meter Values
 ```bash
-python main.py read water       # Read water meter
-python main.py read electricity # Read electricity meter
-python main.py read gas         # Read gas meter
+python main.py read water       # Read water meter (random values with 5s delay)
+python main.py read electricity # Read electricity meter (DSMR from /dev/ttyUSB0)
+python main.py read gas         # Read gas meter (zero values with 5s delay)
 ```
 
 Example output:
 ```
-...
-meter: water meter 1, value: 3.45 m3
-meter: water meter 1, value: 2.78 m3
-meter: water meter 1, value: 4.12 m3
+meter: water meter 1, value: 3.45 m³
+meter: water meter 1, value: 2.78 m³
+meter: water meter 1, value: 4.12 m³
 ...
 ```
 
@@ -75,53 +82,76 @@ python main.py config
 
 ```
 meteread/
-├── main.py                 # Main application entry point
-├── README.md              # This file
-├── requirements.txt       # Project dependencies
-└── meter/                 # Meter module
-    ├── __init__.py        # Module initialization
-    ├── abstractmeter.py   # Abstract base class for all meters
-    ├── electricitymeter.py # Electricity meter implementation
-    ├── gasmeter.py        # Gas meter implementation
-    └── watermeter.py      # Water meter implementation
+├── main.py                    # Main application entry point
+├── README.md                  # This file
+├── pyproject.toml            # Project configuration and dependencies
+├── uv.lock                   # Lock file for uv package manager
+├── meter/                    # Meter module
+│   ├── __init__.py           # Module initialization
+│   ├── AbstractMeter.py      # Abstract base class for all meters
+│   ├── ElectricityMeter.py   # Electricity meter implementation
+│   ├── GasMeter.py          # Gas meter implementation
+│   └── WaterMeter.py        # Water meter implementation
+└── processor/               # Processor module
+    ├── __init__.py          # Module initialization
+    ├── AbstractProcessor.py # Abstract base class for all processors
+    ├── DelayProcessor.py    # Adds delays to processor output
+    ├── DsmrProcessor.py     # DSMR protocol processor for smart meters
+    ├── RandomProcessor.py   # Random value generator processor
+    └── ZeroProcessor.py     # Zero value processor
 ```
 
 ## Architecture
 
-The project follows a clean architecture pattern:
+The project follows a clean architecture pattern with two main abstractions:
 
+### Meters
 - **AbstractMeter**: Base class implementing the Iterator protocol
-- **Concrete Meters**: Specific implementations for each utility type
-- **CLI Interface**: Typer-based command-line interface in `main.py`
+- **Concrete Meters**: Specific implementations for each utility type (Water, Electricity, Gas)
 
-Each meter generates random values between 0-5 with appropriate units and includes a 1-second delay to provide real-world reading behavior.
+### Processors
+- **AbstractProcessor**: Base class for data processing strategies
+- **Concrete Processors**: Different implementations for various data sources and behaviors
+
+Each meter is configured with a processor that determines how the data is generated or read. This allows for flexible combinations like:
+- Water meter with random data and delays for simulation
+- Electricity meter with real DSMR data from smart meters
+- Gas meter with zero values for testing
+
+## Dependencies
+
+- **typer**: Command-line interface framework
+- **dsmr-parser**: DSMR protocol parsing for Dutch smart meters
+- **Python 3.13+**: Required Python version
 
 ## Development
 
 ### Adding New Meter Types
 
-To add a new meter type:
-
 1. Create a new class inheriting from `AbstractMeter`
-2. Implement the `__next__()` method
-3. Add the meter to the meters dictionary in `main.py`
+2. Implement the required properties (`name`, `unit`)
+3. Configure with appropriate processor in `main.py`
 
-Example:
+### Adding New Processors
+
+1. Create a new class inheriting from `AbstractProcessor`
+2. Implement the `__next__()` method to return float values
+3. Add any required initialization parameters
+
+### Example: Custom Processor
 
 ```python
-from meter.AbstractMeter import AbstractMeter
+from processor.AbstractProcessor import AbstractProcessor
 
-
-class SolarMeter(AbstractMeter):
-    def __init__(self, name: str, sn: str | None = None):
-        super().__init__(name, 'kWh', sn)
-
+class CustomProcessor(AbstractProcessor):
+    def __init__(self, custom_param):
+        self.custom_param = custom_param
+    
     def __next__(self) -> float:
-        # Implementation here
-        raise StopIteration
+        # Your custom logic here
+        return 1.0 # sample value
 ```
 
-## Requirements
+## License
 
-- Python 3.9+
-- typer
+See LICENSE file for details.
