@@ -22,7 +22,7 @@ Meteread is a command-line application that provides meter readings from differe
 ## Meter Types
 
 - **Water Meter**: Measures water consumption in cubic meters (m³)
-- **Electricity Meter**: Measures electrical consumption in kilowatts (kW) 
+- **Electricity Meter**: Measures electrical consumption in kilowatts (kW/h) 
 - **Gas Meter**: Measures gas consumption in cubic meters (m³)
 
 ## Processor Types
