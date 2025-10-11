@@ -1,4 +1,4 @@
 from processor.DelayProcessor import DelayProcessor
 from processor.RandomProcessor import RandomProcessor
 from processor.ZeroProcessor import ZeroProcessor
-from processor.DsmrProcessor import DsmrProcessor
+from processor.DSMRv5Processor import DSMRv5Processor
