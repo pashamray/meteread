@@ -2,7 +2,7 @@ from processor.AbstractProcessor import AbstractProcessor
 from dsmr_parser import telegram_specifications
 from dsmr_parser.clients import SerialReader, SERIAL_SETTINGS_V5
 
-class DSMRv5Processor(AbstractProcessor):
+class DSMRv5ReadProcessor(AbstractProcessor):
     def __init__(self, device: str = '/dev/ttyUSB0'):
         self.reader = SerialReader(
             device=device,
@@ -11,6 +11,5 @@ class DSMRv5Processor(AbstractProcessor):
         )
         self.iterator = self.reader.read_as_object()
 
-    def __next__(self) -> float:
-        telegram = next(self.iterator)
-        return telegram.CURRENT_ELECTRICITY_USAGE.value - telegram.CURRENT_ELECTRICITY_DELIVERY.value
+    def __next__(self):
+        return next(self.iterator)

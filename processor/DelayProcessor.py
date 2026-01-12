@@ -8,6 +8,6 @@ class DelayProcessor(AbstractProcessor):
         self.processor = processor
         self.delay = delay
 
-    def __next__(self) -> float:
+    def __next__(self):
         sleep(self.delay)
         return next(self.processor)

@@ -4,5 +4,5 @@ from collections.abc import Iterator
 
 class AbstractProcessor(Iterator, ABC):
     @abstractmethod
-    def __next__(self) -> float:
+    def __next__(self):
         raise StopIteration

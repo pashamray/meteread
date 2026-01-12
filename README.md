@@ -22,7 +22,7 @@ Meteread is a command-line application that provides meter readings from differe
 ## Meter Types
 
 - **Water Meter**: Measures water consumption in cubic meters (m³)
-- **Electricity Meter**: Measures electrical consumption in kilowatts (kW/h) 
+- **Electricity Meter**: Measures electrical consumption (kw/h)
 - **Gas Meter**: Measures gas consumption in cubic meters (m³)
 
 ## Processor Types
@@ -30,7 +30,7 @@ Meteread is a command-line application that provides meter readings from differe
 - **RandomProcessor**: Generates random values for testing and simulation
 - **ZeroProcessor**: Returns zero values (useful for testing)
 - **DelayProcessor**: Wraps another processor and adds configurable delays
-- **DsmrProcessor**: Reads real electricity data from DSMR-compatible smart meters
+- **DSMRv5ReadProcessor**: Reads real electricity data from DSMR-compatible smart meters
 
 ## Installation
 
@@ -62,16 +62,16 @@ python main.py read <meter_type>
 
 #### Read Meter Values
 ```bash
-python main.py read water       # Read water meter (random values with 5s delay)
+python main.py read water       # Read water meter (random values with 1s delay)
 python main.py read electricity # Read electricity meter (DSMR from /dev/ttyUSB0)
-python main.py read gas         # Read gas meter (zero values with 5s delay)
+python main.py read gas         # Read gas meter (zero values with 1s delay)
 ```
 
 Example output:
 ```
-meter: water meter 1, value: 3.45 m³
-meter: water meter 1, value: 2.78 m³
-meter: water meter 1, value: 4.12 m³
+meter: cold water, value: 3.45 m³
+meter: cold water, value: 2.78 m³
+meter: cold water, value: 4.12 m³
 ...
 ```
 
@@ -99,7 +99,7 @@ meteread/
     ├── __init__.py          # Module initialization
     ├── AbstractProcessor.py # Abstract base class for all processors
     ├── DelayProcessor.py    # Adds delays to processor output
-    ├── DsmrProcessor.py     # DSMR protocol processor for smart meters
+    ├── DSMRv5ReadProcessor.py # DSMR protocol processor for smart meters
     ├── RandomProcessor.py   # Random value generator processor
     └── ZeroProcessor.py     # Zero value processor
 ```
@@ -149,7 +149,7 @@ from processor.AbstractProcessor import AbstractProcessor
 class CustomProcessor(AbstractProcessor):
     def __init__(self, custom_param):
         self.custom_param = custom_param
-    
+
     def __next__(self) -> float:
         # Your custom logic here
         return 1.0 # sample value
@@ -158,3 +158,4 @@ class CustomProcessor(AbstractProcessor):
 ## License
 
 See LICENSE file for details.
+

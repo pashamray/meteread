@@ -1,6 +1,6 @@
 import typer
 from meter import WaterMeter, ElectricityMeter, GasMeter
-from processor import DelayProcessor, ZeroProcessor, RandomProcessor, DSMRv5Processor
+from processor import DelayProcessor, ZeroProcessor, RandomProcessor, DSMRv5ReadProcessor
 
 app = typer.Typer()
 
@@ -8,23 +8,23 @@ app = typer.Typer()
 def read(name: str):
     meters = {
         'water': WaterMeter(
-            name='water meter 1',
+            name='cold water',
             processor=DelayProcessor(
                 processor=RandomProcessor(),
-                delay=5.0
+                delay=1.0
             )
         ),
         'electricity': ElectricityMeter(
-            name='electricity meter 1',
-            processor=DSMRv5Processor(
+            name='electricity meter',
+            processor=DSMRv5ReadProcessor(
                 device='/dev/ttyUSB0'
             )
         ),
         'gas': GasMeter(
-            name='gas meter 1',
+            name='gas meter',
             processor=DelayProcessor(
                 processor=ZeroProcessor(),
-                delay=5.0
+                delay=1.0
             )
         ),
     }
