@@ -1,10 +1,10 @@
 # Meteread
 
-A Python utility for reading meter values from various types of utility meters including water, electricity, and gas meters with configurable data processors.
+A Python utility for reading meter values from various types of utility meters including water, electricity, and gas meters with configurable data readers.
 
 ## Overview
 
-Meteread is a command-line application that provides meter readings from different utility meters. It features a modular architecture with separate meter types and data processors, allowing for flexible configuration of how meter data is read and processed. The project uses an object-oriented design with abstract base classes for both meters and processors.
+Meteread is a command-line application that provides meter readings from different utility meters. It features a modular architecture with separate meter types and data readers, allowing for flexible configuration of how meter data is read and processed. The project uses an object-oriented design with abstract base classes for both meters and readers.
 
 ### Screenshot
 ![screenshot](doc/screenshot.png)
@@ -12,12 +12,12 @@ Meteread is a command-line application that provides meter readings from differe
 ## Features
 
 - **Multiple Meter Types**: Support for water, electricity, and gas meters
-- **Modular Processor Architecture**: Configurable data processors for different reading behaviors
+- **Modular Reader Architecture**: Configurable data readers for different reading behaviors
 - **DSMR Support**: Real electricity meter reading via DSMR protocol
-- **Delay and Random Processing**: Simulated readings with configurable delays
+- **Delay and Random Readers**: Simulated readings with configurable delays
 - **Iterator Pattern**: Each meter implements Python's iterator protocol for continuous reading
 - **Command Line Interface**: Easy-to-use CLI built with Typer
-- **Extensible Design**: Abstract base classes allow for easy addition of new meter types and processors
+- **Extensible Design**: Abstract base classes allow for easy addition of new meter types and readers
 
 ## Meter Types
 
@@ -25,12 +25,12 @@ Meteread is a command-line application that provides meter readings from differe
 - **Electricity Meter**: Measures electrical consumption (kw/h)
 - **Gas Meter**: Measures gas consumption in cubic meters (m³)
 
-## Processor Types
+## Reader Types
 
-- **RandomProcessor**: Generates random values for testing and simulation
-- **ZeroProcessor**: Returns zero values (useful for testing)
-- **DelayProcessor**: Wraps another processor and adds configurable delays
-- **DSMRv5ReadProcessor**: Reads real electricity data from DSMR-compatible smart meters
+- **RandomReader**: Generates random values for testing and simulation
+- **ZeroReader**: Returns zero values (useful for testing)
+- **DelayReader**: Wraps another reader and adds configurable delays
+- **DSMRv5Reader**: Reads real electricity data from DSMR-compatible smart meters
 
 ## Installation
 
@@ -93,15 +93,15 @@ meteread/
 │   ├── __init__.py           # Module initialization
 │   ├── AbstractMeter.py      # Abstract base class for all meters
 │   ├── ElectricityMeter.py   # Electricity meter implementation
-│   ├── GasMeter.py          # Gas meter implementation
-│   └── WaterMeter.py        # Water meter implementation
-└── processor/               # Processor module
-    ├── __init__.py          # Module initialization
-    ├── AbstractProcessor.py # Abstract base class for all processors
-    ├── DelayProcessor.py    # Adds delays to processor output
-    ├── DSMRv5ReadProcessor.py # DSMR protocol processor for smart meters
-    ├── RandomProcessor.py   # Random value generator processor
-    └── ZeroProcessor.py     # Zero value processor
+│   ├── GasMeter.py           # Gas meter implementation
+│   └── WaterMeter.py         # Water meter implementation
+└── reader/                   # Reader module
+    ├── __init__.py           # Module initialization
+    ├── AbstractReader.py     # Abstract base class for all readers
+    ├── DelayReader.py        # Adds delays to reader output
+    ├── DSMRv5Reader.py       # DSMR protocol reader for smart meters
+    ├── RandomReader.py       # Random value generator reader
+    └── ZeroReader.py         # Zero value reader
 ```
 
 ## Architecture
@@ -112,11 +112,11 @@ The project follows a clean architecture pattern with two main abstractions:
 - **AbstractMeter**: Base class implementing the Iterator protocol
 - **Concrete Meters**: Specific implementations for each utility type (Water, Electricity, Gas)
 
-### Processors
-- **AbstractProcessor**: Base class for data processing strategies
-- **Concrete Processors**: Different implementations for various data sources and behaviors
+### Readers
+- **AbstractReader**: Base class for data reading strategies
+- **Concrete Readers**: Different implementations for various data sources and behaviors
 
-Each meter is configured with a processor that determines how the data is generated or read. This allows for flexible combinations like:
+Each meter is configured with a reader that determines how the data is generated or read. This allows for flexible combinations like:
 - Water meter with random data and delays for simulation
 - Electricity meter with real DSMR data from smart meters
 - Gas meter with zero values for testing
@@ -133,20 +133,20 @@ Each meter is configured with a processor that determines how the data is genera
 
 1. Create a new class inheriting from `AbstractMeter`
 2. Implement the required properties (`name`, `unit`)
-3. Configure with appropriate processor in `main.py`
+3. Configure with the appropriate reader in `main.py`
 
-### Adding New Processors
+### Adding New Readers
 
-1. Create a new class inheriting from `AbstractProcessor`
+1. Create a new class inheriting from `AbstractReader`
 2. Implement the `__next__()` method to return float values
 3. Add any required initialization parameters
 
-### Example: Custom Processor
+### Example: Custom Reader
 
 ```python
-from processor.AbstractProcessor import AbstractProcessor
+from reader.AbstractReader import AbstractReader
 
-class CustomProcessor(AbstractProcessor):
+class CustomReader(AbstractReader):
     def __init__(self, custom_param):
         self.custom_param = custom_param
 

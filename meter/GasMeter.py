@@ -1,11 +1,11 @@
-from collections.abc import Iterator
 from meter.AbstractMeter import AbstractMeter
+from reader.AbstractReader import AbstractReader
 
 class GasMeter(AbstractMeter):
-    def __init__(self, name: str, processor: Iterator, sn: str | None = None):
+    def __init__(self, name: str, sn: str, reader: AbstractReader):
         super().__init__(
             name=name,
             unit='m3',
-            processor=processor,
-            sn=sn
+            sn=sn,
+            reader=reader,
         )
