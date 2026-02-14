@@ -1,4 +1,4 @@
-from reader.AbstractReader import AbstractReader
+from reader import AbstractReader
 
 class ZeroReader(AbstractReader):
 

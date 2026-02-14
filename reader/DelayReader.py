@@ -1,7 +1,6 @@
-from collections.abc import Iterator
 from time import sleep
 
-from reader.AbstractReader import AbstractReader
+from reader import AbstractReader
 
 class DelayReader(AbstractReader):
     def __init__(self, reader: AbstractReader, delay: float = 1.0):

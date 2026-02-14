@@ -1,6 +1,6 @@
 import random
 
-from reader.AbstractReader import AbstractReader
+from reader import AbstractReader
 
 class RandomReader(AbstractReader):
 
