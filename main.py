@@ -10,7 +10,6 @@ def read(name: str):
     meters = {
         'water': WaterMeter(
             name='cold water',
-            sn='undefined',
             reader=DelayReader(
                 reader=RandomReader(),
                 delay=1.0
@@ -19,7 +18,6 @@ def read(name: str):
         ),
         'electricity': ElectricityMeter(
             name='electricity meter',
-            sn='undefined',
             reader=DSMRv5Reader(
                 device='/dev/ttyUSB0'
             ),
@@ -27,7 +25,6 @@ def read(name: str):
         ),
         'gas': GasMeter(
             name='gas meter',
-            sn='undefined',
             reader=DelayReader(
                 reader=ZeroReader(),
                 delay=1.0
@@ -37,8 +34,9 @@ def read(name: str):
     }
     meter = meters.get(name)
 
-    for value in meter:
-        print(f"meter: {meter.name}, value: {value} {meter.unit}")
+    while True:
+        for value in meter():
+            print(f"meter: {meter.name}, value: {value['value']} {value['unit']}")
 
 @app.command()
 def config():

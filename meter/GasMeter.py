@@ -3,11 +3,9 @@ from processor import AbstractProcessor
 from reader import AbstractReader
 
 class GasMeter(AbstractMeter):
-    def __init__(self, name: str, sn: str, reader: AbstractReader, processor: AbstractProcessor):
+    def __init__(self, name: str, reader: AbstractReader, processor: AbstractProcessor):
         super().__init__(
             name=name,
-            unit='m3',
-            sn=sn,
             reader=reader,
             processor=processor,
         )
