@@ -1,7 +1,7 @@
 import typer
 from meter import GenericMeter
 from processor import NoneProcessor, PassProcessor
-from reader import DelayReader, ZeroReader, RandomReader, DSMRv5Reader
+from reader import DelayReader, ZeroReader, RandomReader, DSMRv5SerialReader
 
 app = typer.Typer()
 
@@ -20,7 +20,7 @@ def read(name: str):
         ),
         'electricity': GenericMeter(
             name='electricity meter',
-            reader=DSMRv5Reader(
+            reader=DSMRv5SerialReader(
                 device='/dev/ttyUSB0'
             ),
             processor=NoneProcessor()

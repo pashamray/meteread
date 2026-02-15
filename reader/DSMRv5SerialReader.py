@@ -2,7 +2,7 @@ from reader import AbstractReader
 from dsmr_parser import telegram_specifications
 from dsmr_parser.clients import SerialReader, SERIAL_SETTINGS_V5
 
-class DSMRv5Reader(AbstractReader):
+class DSMRv5SerialReader(AbstractReader):
     def __init__(self, device: str = '/dev/ttyUSB0'):
         self.reader = SerialReader(
             device=device,
