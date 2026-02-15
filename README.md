@@ -4,26 +4,25 @@ A Python utility for reading meter values from various types of utility meters i
 
 ## Overview
 
-Meteread is a command-line application that provides meter readings from different utility meters. It features a modular architecture with separate meter types and data readers, allowing for flexible configuration of how meter data is read and processed. The project uses an object-oriented design with abstract base classes for both meters and readers.
+Meteread is a command-line application that provides meter readings from different utility meters. It features a modular architecture with separate components for meters, data readers, and processors, allowing for flexible configuration of how meter data is read and processed. The project uses an object-oriented design with abstract base classes for meters, readers, and processors.
 
 ### Screenshot
 ![screenshot](doc/screenshot.png)
 
 ## Features
 
-- **Multiple Meter Types**: Support for water, electricity, and gas meters
+- **Generic Meter**: Flexible meter configuration for any utility type (water, electricity, gas)
 - **Modular Reader Architecture**: Configurable data readers for different reading behaviors
+- **Processor Support**: Data processors for transforming and formatting meter readings
 - **DSMR Support**: Real electricity meter reading via DSMR protocol
 - **Delay and Random Readers**: Simulated readings with configurable delays
-- **Iterator Pattern**: Each meter implements Python's iterator protocol for continuous reading
+- **Callable Pattern**: Each meter implements Python's callable protocol for continuous reading
 - **Command Line Interface**: Easy-to-use CLI built with Typer
-- **Extensible Design**: Abstract base classes allow for easy addition of new meter types and readers
+- **Extensible Design**: Abstract base classes allow for easy addition of new readers and processors
 
 ## Meter Types
 
-- **Water Meter**: Measures water consumption in cubic meters (m³)
-- **Electricity Meter**: Measures electrical consumption (kw/h)
-- **Gas Meter**: Measures gas consumption in cubic meters (m³)
+- **GenericMeter**: Configurable meter that combines a reader and processor for any utility type
 
 ## Reader Types
 
@@ -31,6 +30,11 @@ Meteread is a command-line application that provides meter readings from differe
 - **ZeroReader**: Returns zero values (useful for testing)
 - **DelayReader**: Wraps another reader and adds configurable delays
 - **DSMRv5Reader**: Reads real electricity data from DSMR-compatible smart meters
+
+## Processor Types
+
+- **PassProcessor**: Passes through the value with configurable unit and serial number
+- **NoneProcessor**: Returns None values (useful for testing or placeholder configurations)
 
 ## Installation
 
@@ -92,9 +96,12 @@ meteread/
 ├── meter/                    # Meter module
 │   ├── __init__.py           # Module initialization
 │   ├── AbstractMeter.py      # Abstract base class for all meters
-│   ├── ElectricityMeter.py   # Electricity meter implementation
-│   ├── GasMeter.py           # Gas meter implementation
-│   └── WaterMeter.py         # Water meter implementation
+│   └── GenericMeter.py       # Generic meter implementation
+├── processor/                # Processor module
+│   ├── __init__.py           # Module initialization
+│   ├── AbstractProcessor.py  # Abstract base class for all processors
+│   ├── NoneProcessor.py      # None value processor
+│   └── PassProcessor.py      # Pass-through processor
 └── reader/                   # Reader module
     ├── __init__.py           # Module initialization
     ├── AbstractReader.py     # Abstract base class for all readers
@@ -106,19 +113,23 @@ meteread/
 
 ## Architecture
 
-The project follows a clean architecture pattern with two main abstractions:
+The project follows a clean architecture pattern with three main abstractions:
 
 ### Meters
-- **AbstractMeter**: Base class implementing the Iterator protocol
-- **Concrete Meters**: Specific implementations for each utility type (Water, Electricity, Gas)
+- **AbstractMeter**: Base class implementing the callable protocol
+- **GenericMeter**: Flexible meter that combines a reader and processor for any utility type
 
 ### Readers
 - **AbstractReader**: Base class for data reading strategies
 - **Concrete Readers**: Different implementations for various data sources and behaviors
 
-Each meter is configured with a reader that determines how the data is generated or read. This allows for flexible combinations like:
-- Water meter with random data and delays for simulation
-- Electricity meter with real DSMR data from smart meters
+### Processors
+- **AbstractProcessor**: Base class for data processing strategies
+- **Concrete Processors**: Different implementations for transforming reader output
+
+Each meter is configured with a reader and a processor. The reader determines how the raw data is generated or read, while the processor transforms the data into the final output format. This allows for flexible combinations like:
+- Water meter with random data, delays, and pass-through processing
+- Electricity meter with real DSMR data and custom processing
 - Gas meter with zero values for testing
 
 ## Dependencies
@@ -132,13 +143,19 @@ Each meter is configured with a reader that determines how the data is generated
 ### Adding New Meter Types
 
 1. Create a new class inheriting from `AbstractMeter`
-2. Implement the required properties (`name`, `unit`)
-3. Configure with the appropriate reader in `main.py`
+2. Implement any required custom behavior
+3. Configure with the appropriate reader and processor in `main.py`
 
 ### Adding New Readers
 
 1. Create a new class inheriting from `AbstractReader`
 2. Implement the `__next__()` method to return float values
+3. Add any required initialization parameters
+
+### Adding New Processors
+
+1. Create a new class inheriting from `AbstractProcessor`
+2. Implement the `__call__()` method to yield processed data dictionaries
 3. Add any required initialization parameters
 
 ### Example: Custom Reader
@@ -153,6 +170,24 @@ class CustomReader(AbstractReader):
     def __next__(self) -> float:
         # Your custom logic here
         return 1.0 # sample value
+```
+
+### Example: Custom Processor
+
+```python
+from typing import Any, Generator
+from processor.AbstractProcessor import AbstractProcessor
+
+class CustomProcessor(AbstractProcessor):
+    def __init__(self, sn: str = 'None', unit: str = 'None'):
+        super().__init__(sn, unit)
+
+    def __call__(self, data) -> Generator[dict[str, str | None], Any, None]:
+        yield {
+            'value': data * 2,  # Custom transformation
+            'unit': self.unit,
+            'sn': self.sn,
+        }
 ```
 
 ## License
