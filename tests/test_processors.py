@@ -4,6 +4,7 @@ from processor.NoneProcessor import NoneProcessor
 from processor.PassProcessor import PassProcessor
 from processor.DSMRElectricityProcessor import DSMRElectricityProcessor
 from processor.DSMRGasProcessor import DSMRGasProcessor
+from processor.ChainProcessor import ChainProcessor
 
 
 class TestNoneProcessor:
@@ -95,3 +96,32 @@ class TestDSMRGasProcessor:
         mock_telegram.MBUS_DEVICES = [water_device]
         DSMRGasProcessor()(mock_telegram)
         assert capsys.readouterr().out == ''
+
+
+class TestChainProcessor:
+    def test_calls_all_processors(self):
+        a, b, c = MagicMock(), MagicMock(), MagicMock()
+        ChainProcessor(a, b, c)('data')
+        a.assert_called_once_with('data')
+        b.assert_called_once_with('data')
+        c.assert_called_once_with('data')
+
+    def test_calls_in_order(self):
+        order = []
+        a = MagicMock(side_effect=lambda d: order.append('a'))
+        b = MagicMock(side_effect=lambda d: order.append('b'))
+        ChainProcessor(a, b)('data')
+        assert order == ['a', 'b']
+
+    def test_returns_none(self):
+        assert ChainProcessor(MagicMock())('data') is None
+
+    def test_empty_chain(self):
+        assert ChainProcessor()('data') is None
+
+    def test_passes_same_data_to_all(self):
+        received = []
+        p = MagicMock(side_effect=lambda d: received.append(d))
+        obj = object()
+        ChainProcessor(p, p)(obj)
+        assert received == [obj, obj]

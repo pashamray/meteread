@@ -31,7 +31,7 @@ Three composable layers wired together in `main.py`:
 
 **Reader** (`reader/`) — implements Python's `Iterator` protocol via `AbstractReader`. `__next__` returns the raw data for one reading. `DelayReader` decorates any reader with a sleep between reads. `DSMRv5SerialReader` reads from a DSMR v5 smart meter over serial. `DSMRv5RawReader` parses a raw telegram string and yields it repeatedly — useful for testing without hardware.
 
-**Processor** (`processor/`) — a callable (`AbstractProcessor.__call__(data) -> None`) that receives each raw reading and does something with it (print, store, etc.).
+**Processor** (`processor/`) — a callable (`AbstractProcessor.__call__(data) -> None`) that receives each raw reading and does something with it (print, store, etc.). `ChainProcessor` composes multiple processors so they all receive the same data in sequence.
 
 **Meter** (`meter/`) — `AbstractMeter.__call__` drives the loop: `while self.processor(next(self.reader)): pass`. Since processors return `None` (falsy), this exits after one read. The outer `while True` in `main.py` calls `meter()` repeatedly for continuous reading.
 
@@ -46,6 +46,7 @@ meteread/
 │   └── GenericMeter.py
 ├── processor/
 │   ├── AbstractProcessor.py
+│   ├── ChainProcessor.py
 │   ├── DSMRElectricityProcessor.py
 │   ├── DSMRGasProcessor.py
 │   ├── NoneProcessor.py
@@ -106,6 +107,14 @@ from processor import AbstractProcessor
 class MyProcessor(AbstractProcessor):
     def __call__(self, data) -> None:
         print(data)
+```
+
+To run multiple processors on the same reading, use `ChainProcessor`:
+
+```python
+from processor import ChainProcessor, DSMRElectricityProcessor, DSMRGasProcessor
+
+ChainProcessor(DSMRElectricityProcessor(), DSMRGasProcessor())
 ```
 
 ## Dependencies
