@@ -37,8 +37,7 @@ def read(name: str):
     meter = meters.get(name)
 
     while True:
-        for value in meter():
-            print(f"meter: {meter.name}, value: {value['value']} {value['unit']}")
+        meter()
 
 @app.command()
 def config():

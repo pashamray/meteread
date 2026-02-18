@@ -9,4 +9,5 @@ class AbstractMeter():
         self.processor = processor
 
     def __call__(self, *args, **kwargs):
-        return self.processor(next(self.reader))
+        while self.processor(next(self.reader)):
+            pass
