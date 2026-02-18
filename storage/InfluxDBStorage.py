@@ -1,8 +1,7 @@
 import logging
 from datetime import datetime, timezone
 
-from influxdb_client import InfluxDBClient, Point
-from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client_3 import InfluxDBClient3, Point
 
 from storage import AbstractStorage
 
@@ -10,11 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 class InfluxDBStorage(AbstractStorage):
-    def __init__(self, url: str, token: str, org: str, bucket: str):
-        self.bucket = bucket
-        self.org = org
-        self._client = InfluxDBClient(url=url, token=token, org=org)
-        self._write_api = self._client.write_api(write_options=SYNCHRONOUS)
+    def __init__(self, host: str, token: str, database: str):
+        self._client = InfluxDBClient3(host=host, token=token, database=database)
 
     def write(self, measurement: str, tags: dict, fields: dict, timestamp: datetime | None = None) -> None:
         if timestamp is None:
@@ -26,5 +22,5 @@ class InfluxDBStorage(AbstractStorage):
         for key, value in fields.items():
             point = point.field(key, value)
 
-        self._write_api.write(bucket=self.bucket, org=self.org, record=point)
+        self._client.write(record=point)
         logger.info(f"influxdb write: {measurement} {fields}")

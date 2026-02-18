@@ -1,0 +1,25 @@
+name: meteread
+
+services:
+  influxdb:
+    container_name: influxdb
+    hostname: influxdb
+    image: influxdb:3-core
+    user: root
+    ports:
+      - "8181:8181"
+    command:
+      - influxdb3
+      - serve
+      - --node-id=node0
+      - --object-store=file
+      - --data-dir=/var/lib/influxdb3/data
+      - --plugin-dir=/var/lib/influxdb3/plugins
+      - --without-auth
+    volumes:
+      - influxdb-data:/var/lib/influxdb3/data
+      - influxdb-plugins:/var/lib/influxdb3/plugins
+
+volumes:
+  influxdb-data:
+  influxdb-plugins:

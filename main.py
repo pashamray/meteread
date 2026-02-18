@@ -4,6 +4,7 @@ import typer
 from meter import GenericMeter
 from processor import NoneProcessor, PassProcessor, DSMRElectricityProcessor, DSMRGasProcessor, ChainProcessor
 from reader import DelayReader, ZeroReader, RandomReader, DSMRv5SerialReader, DSMRv5RawReader
+from storage import InfluxDBStorage
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s - %(levelname)s]: %(message)s')
 app = typer.Typer()
@@ -11,6 +12,8 @@ app = typer.Typer()
 
 @app.command()
 def read(name: str):
+    storage = InfluxDBStorage(host='http://localhost:8181', token='', database='meteread')
+
     meters = {
         'water': GenericMeter(
             name='cold water',
@@ -79,8 +82,12 @@ def read(name: str):
                 )
             ),
             processor=ChainProcessor(
-                DSMRElectricityProcessor(),
-                DSMRGasProcessor(),
+                DSMRElectricityProcessor(
+                    storage=storage
+                ),
+                DSMRGasProcessor(
+                    storage=storage
+                ),
             )
         ),
     }

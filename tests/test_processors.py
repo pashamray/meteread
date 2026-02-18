@@ -1,3 +1,4 @@
+from decimal import Decimal
 from unittest.mock import MagicMock
 
 from processor.NoneProcessor import NoneProcessor
@@ -72,6 +73,25 @@ class TestDSMRElectricityProcessor:
         DSMRElectricityProcessor()(telegram)
         assert 'returned=0.000kW' in caplog.messages[0]
 
+    def test_writes_to_storage(self, telegram):
+        storage = MagicMock()
+        DSMRElectricityProcessor(storage=storage)(telegram)
+        storage.write.assert_called_once_with(
+            "electricity",
+            {"sn": "4530303334303034363639353537343136"},
+            {
+                "t1": Decimal("1234.567"),
+                "t2": Decimal("2345.678"),
+                "current": Decimal("1.500"),
+                "returned": Decimal("0.000"),
+            },
+        )
+
+    def test_does_not_write_to_storage_when_none(self, telegram):
+        storage = MagicMock()
+        DSMRElectricityProcessor()(telegram)
+        storage.write.assert_not_called()
+
 
 class TestDSMRGasProcessor:
     def test_returns_none(self, telegram):
@@ -88,6 +108,20 @@ class TestDSMRGasProcessor:
     def test_prints_reading(self, telegram, caplog):
         DSMRGasProcessor()(telegram)
         assert 'reading=1234.567 m3' in caplog.messages[0]
+
+    def test_writes_to_storage(self, telegram):
+        storage = MagicMock()
+        DSMRGasProcessor(storage=storage)(telegram)
+        storage.write.assert_called_once_with(
+            "gas",
+            {"sn": "4730303233353631323930333635383137"},
+            {"reading": Decimal("1234.567")},
+        )
+
+    def test_does_not_write_to_storage_when_none(self, telegram):
+        storage = MagicMock()
+        DSMRGasProcessor()(telegram)
+        storage.write.assert_not_called()
 
     def test_no_output_for_non_gas_device(self, caplog):
         water_device = MagicMock()

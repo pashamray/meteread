@@ -80,29 +80,24 @@ class TestCsvStorage:
 class TestInfluxDBStorage:
     @pytest.fixture
     def mock_client(self):
-        with patch("storage.InfluxDBStorage.InfluxDBClient") as mock:
+        with patch("storage.InfluxDBStorage.InfluxDBClient3") as mock:
             yield mock
 
     @pytest.fixture
     def storage(self, mock_client):
         return InfluxDBStorage(
-            url="http://localhost:8086",
+            host="http://localhost:8086",
             token="my-token",
-            org="my-org",
-            bucket="my-bucket",
+            database="my-database",
         )
 
     def test_creates_client_with_correct_params(self, mock_client):
-        InfluxDBStorage(url="http://host:8086", token="tok", org="org", bucket="bkt")
-        mock_client.assert_called_once_with(url="http://host:8086", token="tok", org="org")
+        InfluxDBStorage(host="http://host:8086", token="tok", database="db")
+        mock_client.assert_called_once_with(host="http://host:8086", token="tok", database="db")
 
-    def test_write_uses_correct_bucket_and_org(self, storage, mock_client):
-        write_api = mock_client.return_value.write_api.return_value
+    def test_write_calls_client_write(self, storage, mock_client):
         storage.write(MEASUREMENT, TAGS, FIELDS, TIMESTAMP)
-        write_api.write.assert_called_once()
-        _, kwargs = write_api.write.call_args
-        assert kwargs["bucket"] == "my-bucket"
-        assert kwargs["org"] == "my-org"
+        mock_client.return_value.write.assert_called_once()
 
     def test_write_point_has_correct_measurement(self, storage, mock_client):
         with patch("storage.InfluxDBStorage.Point") as mock_point:
