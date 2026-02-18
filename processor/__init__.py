@@ -1,3 +1,5 @@
 from processor.AbstractProcessor import AbstractProcessor
 from processor.NoneProcessor import NoneProcessor
 from processor.PassProcessor import PassProcessor
+from processor.DSMRElectricityProcessor import DSMRElectricityProcessor
+from processor.DSMRGasProcessor import DSMRGasProcessor

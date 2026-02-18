@@ -1,8 +1,11 @@
 from unittest.mock import patch, MagicMock
 
+from dsmr_parser.objects import Telegram
+
 from reader.ZeroReader import ZeroReader
 from reader.RandomReader import RandomReader
 from reader.DelayReader import DelayReader
+from reader.DSMRv5RawReader import DSMRv5RawReader
 
 
 class TestZeroReader:
@@ -120,3 +123,45 @@ class TestDelayReader:
         inner = MagicMock()
         reader = DelayReader(inner)
         assert iter(reader) is reader
+
+
+class TestDSMRv5RawReader:
+    def test_returns_telegram(self, raw_telegram_v5):
+        reader = DSMRv5RawReader(raw_telegram_v5)
+        assert isinstance(next(reader), Telegram)
+
+    def test_returns_same_object_each_time(self, raw_telegram_v5):
+        reader = DSMRv5RawReader(raw_telegram_v5)
+        assert next(reader) is next(reader)
+
+    def test_is_iterator(self, raw_telegram_v5):
+        reader = DSMRv5RawReader(raw_telegram_v5)
+        assert iter(reader) is reader
+
+    def test_parses_electricity_identifier(self, raw_telegram_v5):
+        reader = DSMRv5RawReader(raw_telegram_v5)
+        t = next(reader)
+        assert t.EQUIPMENT_IDENTIFIER.value == '4530303334303034363639353537343136'
+
+    def test_parses_electricity_tariff_1(self, raw_telegram_v5):
+        from decimal import Decimal
+        reader = DSMRv5RawReader(raw_telegram_v5)
+        t = next(reader)
+        assert t.ELECTRICITY_USED_TARIFF_1.value == Decimal('1234.567')
+        assert t.ELECTRICITY_USED_TARIFF_1.unit == 'kWh'
+
+    def test_parses_mbus_gas_device(self, raw_telegram_v5):
+        reader = DSMRv5RawReader(raw_telegram_v5)
+        t = next(reader)
+        assert hasattr(t, 'MBUS_DEVICES')
+        assert len(t.MBUS_DEVICES) == 1
+        device = t.MBUS_DEVICES[0]
+        assert device.MBUS_DEVICE_TYPE.value == 3
+
+    def test_parses_gas_reading(self, raw_telegram_v5):
+        from decimal import Decimal
+        reader = DSMRv5RawReader(raw_telegram_v5)
+        t = next(reader)
+        device = t.MBUS_DEVICES[0]
+        assert device.MBUS_METER_READING.value == Decimal('1234.567')
+        assert device.MBUS_METER_READING.unit == 'm3'
