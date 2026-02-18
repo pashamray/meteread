@@ -1,4 +1,8 @@
+import logging
+
 from processor import AbstractProcessor
+
+logger = logging.getLogger(__name__)
 
 GAS_DEVICE_TYPE = 3
 
@@ -9,5 +13,5 @@ class DSMRGasProcessor(AbstractProcessor):
             if device.MBUS_DEVICE_TYPE.value == GAS_DEVICE_TYPE:
                 sn = device.MBUS_EQUIPMENT_IDENTIFIER.value
                 reading = device.MBUS_METER_READING
-                print(f"gas sn={sn} reading={reading.value} {reading.unit}")
+                logger.info(f"gas sn={sn} reading={reading.value} {reading.unit}")
                 return

@@ -48,54 +48,54 @@ class TestDSMRElectricityProcessor:
     def test_returns_none(self, telegram):
         assert DSMRElectricityProcessor()(telegram) is None
 
-    def test_prints_electricity_line(self, telegram, capsys):
+    def test_prints_electricity_line(self, telegram, caplog):
         DSMRElectricityProcessor()(telegram)
-        assert capsys.readouterr().out.startswith('electricity')
+        assert caplog.messages[0].startswith('electricity')
 
-    def test_prints_serial_number(self, telegram, capsys):
+    def test_prints_serial_number(self, telegram, caplog):
         DSMRElectricityProcessor()(telegram)
-        assert 'sn=4530303334303034363639353537343136' in capsys.readouterr().out
+        assert 'sn=4530303334303034363639353537343136' in caplog.messages[0]
 
-    def test_prints_tariff_1(self, telegram, capsys):
+    def test_prints_tariff_1(self, telegram, caplog):
         DSMRElectricityProcessor()(telegram)
-        assert 't1=1234.567kWh' in capsys.readouterr().out
+        assert 't1=1234.567kWh' in caplog.messages[0]
 
-    def test_prints_tariff_2(self, telegram, capsys):
+    def test_prints_tariff_2(self, telegram, caplog):
         DSMRElectricityProcessor()(telegram)
-        assert 't2=2345.678kWh' in capsys.readouterr().out
+        assert 't2=2345.678kWh' in caplog.messages[0]
 
-    def test_prints_current_usage(self, telegram, capsys):
+    def test_prints_current_usage(self, telegram, caplog):
         DSMRElectricityProcessor()(telegram)
-        assert 'now=1.500kW' in capsys.readouterr().out
+        assert 'now=1.500kW' in caplog.messages[0]
 
-    def test_prints_current_delivery(self, telegram, capsys):
+    def test_prints_current_delivery(self, telegram, caplog):
         DSMRElectricityProcessor()(telegram)
-        assert 'returned=0.000kW' in capsys.readouterr().out
+        assert 'returned=0.000kW' in caplog.messages[0]
 
 
 class TestDSMRGasProcessor:
     def test_returns_none(self, telegram):
         assert DSMRGasProcessor()(telegram) is None
 
-    def test_prints_gas_line(self, telegram, capsys):
+    def test_prints_gas_line(self, telegram, caplog):
         DSMRGasProcessor()(telegram)
-        assert capsys.readouterr().out.startswith('gas')
+        assert caplog.messages[0].startswith('gas')
 
-    def test_prints_serial_number(self, telegram, capsys):
+    def test_prints_serial_number(self, telegram, caplog):
         DSMRGasProcessor()(telegram)
-        assert 'sn=4730303233353631323930333635383137' in capsys.readouterr().out
+        assert 'sn=4730303233353631323930333635383137' in caplog.messages[0]
 
-    def test_prints_reading(self, telegram, capsys):
+    def test_prints_reading(self, telegram, caplog):
         DSMRGasProcessor()(telegram)
-        assert 'reading=1234.567 m3' in capsys.readouterr().out
+        assert 'reading=1234.567 m3' in caplog.messages[0]
 
-    def test_no_output_for_non_gas_device(self, capsys):
+    def test_no_output_for_non_gas_device(self, caplog):
         water_device = MagicMock()
         water_device.MBUS_DEVICE_TYPE.value = 7
         mock_telegram = MagicMock()
         mock_telegram.MBUS_DEVICES = [water_device]
         DSMRGasProcessor()(mock_telegram)
-        assert capsys.readouterr().out == ''
+        assert caplog.messages == []
 
 
 class TestChainProcessor:

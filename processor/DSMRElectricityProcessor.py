@@ -1,4 +1,8 @@
+import logging
+
 from processor import AbstractProcessor
+
+logger = logging.getLogger(__name__)
 
 
 class DSMRElectricityProcessor(AbstractProcessor):
@@ -9,7 +13,7 @@ class DSMRElectricityProcessor(AbstractProcessor):
         current = data.CURRENT_ELECTRICITY_USAGE
         returned = data.CURRENT_ELECTRICITY_DELIVERY
 
-        print(
+        logger.info(
             f"electricity sn={sn} "
             f"t1={t1.value}{t1.unit} "
             f"t2={t2.value}{t2.unit} "
