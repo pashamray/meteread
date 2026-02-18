@@ -7,3 +7,6 @@ dependencies = [
     "dsmr-parser>=1.4.3",
     "typer>=0.19.2",
 ]
+
+[dependency-groups]
+dev = ["pytest>=8"]
