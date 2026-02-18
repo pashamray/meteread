@@ -5,7 +5,7 @@ from meter import GenericMeter
 from processor import NoneProcessor, PassProcessor, DSMRElectricityProcessor, DSMRGasProcessor, ChainProcessor
 from reader import DelayReader, ZeroReader, RandomReader, DSMRv5SerialReader, DSMRv5RawReader
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s - %(levelname)s]: %(message)s')
 app = typer.Typer()
 
 
