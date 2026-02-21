@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ github.repository }}:${{ github.sha }} --tag ${{ github.repository }}:latest
+      run: docker build . --file Dockerfile --tag ${{ github.repository }}:${{ github.sha }} ${{ github.repository }}:latest
     - name: Log in to Github Container Registry
       run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Push the Docker image
