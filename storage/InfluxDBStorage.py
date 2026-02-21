@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 class InfluxDBStorage(AbstractStorage):
-    def __init__(self, host: str, token: str, database: str):
-        self._client = InfluxDBClient3(host=host, token=token, database=database)
+    def __init__(self, host: str, database: str, token: str = ''):
+        self._client = InfluxDBClient3(host=host, database=database, token=token)
 
     def write(self, measurement: str, tags: dict, fields: dict, timestamp: datetime | None = None) -> None:
         if timestamp is None:

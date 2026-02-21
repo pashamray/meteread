@@ -1,6 +1,20 @@
 name: meteread
 
 services:
+  meteread:
+    container_name: meteread
+    hostname: meteread
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    environment:
+      INFLUXDB_URL: http://influxdb:8181
+    command:
+      - read
+      - raw
+
   influxdb:
     container_name: influxdb
     hostname: influxdb

@@ -1,18 +1,24 @@
 import logging
+import os
+
 import typer
+from dotenv import load_dotenv
 
 from meter import GenericMeter
-from processor import NoneProcessor, PassProcessor, DSMRElectricityProcessor, DSMRGasProcessor, ChainProcessor
-from reader import DelayReader, ZeroReader, RandomReader, DSMRv5SerialReader, DSMRv5RawReader
+from processor import PassProcessor, DSMRElectricityProcessor, DSMRGasProcessor, ChainProcessor
+from reader import DelayReader, RandomReader, DSMRv5SerialReader, DSMRv5RawReader
 from storage import InfluxDBStorage
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s - %(levelname)s]: %(message)s')
 app = typer.Typer()
 
+@app.command()
+def main():
+    typer.echo("Hello, I am Meteread!")
 
 @app.command()
 def read(name: str):
-    storage = InfluxDBStorage(host='http://localhost:8181', token='', database='meteread')
+    storage = InfluxDBStorage(host=os.getenv('INFLUXDB_URL'), database='meteread')
 
     meters = {
         'water': GenericMeter(
@@ -37,6 +43,19 @@ def read(name: str):
             ),
             processor=DSMRGasProcessor()
         ),
+        'electricity_and_gas': GenericMeter(
+            name='electricity and gas meter',
+            reader=DSMRv5SerialReader(
+                device='/dev/ttyUSB0'
+            ),
+            processor=ChainProcessor(
+                DSMRElectricityProcessor(
+                    storage=storage
+                ),
+                DSMRGasProcessor(
+                    storage=storage
+                ),
+            )        ),
         'raw': GenericMeter(
             name='raw electricity and gas meter',
             reader=DelayReader(
@@ -103,4 +122,5 @@ def config():
 
 
 if __name__ == "__main__":
+    load_dotenv()
     app()
