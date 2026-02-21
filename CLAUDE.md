@@ -11,6 +11,12 @@ uv sync
 # Run tests
 uv run pytest
 
+# Docs (live preview at http://localhost:8000)
+uv run zensical serve
+
+# Docs (build static site to site/)
+uv run zensical build
+
 # Run a single test file
 uv run pytest tests/test_processors.py
 

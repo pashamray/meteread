@@ -40,7 +40,7 @@ command or serial device.
 
 ## Architecture
 
-Three composable layers wired together in `main.py`:
+Four composable layers wired together in `main.py`:
 
 **Reader** (`reader/`) — implements Python's `Iterator` protocol via `AbstractReader`. `__next__` returns the raw data
 for one reading. `DelayReader` decorates any reader with a sleep between reads. `DSMRv5SerialReader` reads from a DSMR
@@ -76,6 +76,8 @@ meteread/
 ├── compose.yaml
 ├── Dockerfile
 ├── .env.example
+├── mkdocs.yml
+├── docs/
 ├── meter/
 │   ├── AbstractMeter.py
 │   └── GenericMeter.py
@@ -122,6 +124,13 @@ electricity sn=<id> t1=<kWh> t2=<kWh> now=<kW> returned=<kW>
 
 ```
 gas sn=<id> reading=<value> <unit>
+```
+
+## Docs
+
+```bash
+uv run zensical serve   # live preview at http://localhost:8000
+uv run zensical build   # build static site to site/
 ```
 
 ## Testing

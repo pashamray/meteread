@@ -1,0 +1,24 @@
+site_name: Meteread
+site_description: Utility meter reading with a composable reader/processor/storage architecture
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - DSMR: dsmr.md
+  - Extending: extending.md
